@@ -8,6 +8,10 @@ services:
   web:
     # If pre-built image from docker hub exists then use that (docker pull openenergymonitor/emoncms:latest) if not Buildcontainer see Dockerflile
     image: openenergymonitor/emoncms:latest
+    restart: always
+    ports:
+      # Expose Emoncms on localhost port 8080
+      - 8080:80
     build: .
     volumes:
       # mount docker volumes persistant inside docker container
@@ -22,11 +26,15 @@ services:
   db:
     # Official MYSQL docker image
     # To do: make compatiable with 5.7
-    image: mariadb:latest
+    #image: mariadb:latest
+    #image: arm64v8/mariadb
+    image: jsurf/rpi-mariadb
+
     environment:
       - "MYSQL_HOST=localhost"
     volumes:
       - emon-db-data:/var/lib/mysql
+    restart: always
     logging:
       driver: json-file
       options:
@@ -37,6 +45,7 @@ services:
     image: redis:5
     volumes:
       - emon-redis-data:/data
+    restart: always
     logging:
       driver: json-file
       options:
